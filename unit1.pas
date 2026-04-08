@@ -189,8 +189,17 @@ end;
 
 procedure TForm1.SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if key = VK_RETURN then
+  case key of
+  VK_RETURN:
     appendSelectedEntry;
+
+  VK_UP:
+    if ResultList.ItemIndex - 1 >= 0 then
+      ResultList.ItemIndex := ResultList.ItemIndex - 1;
+  vk_down:
+    if ResultList.ItemIndex + 1 < ResultList.count then
+      ResultList.ItemIndex := ResultList.ItemIndex + 1;
+  end;
 end;
 
 procedure TForm1.setReportLabel(txt: string);
