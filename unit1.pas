@@ -19,16 +19,16 @@ type
 
   TDictEntry = class
   private
-    fHanzi: string;
-    fMandarin: string;
-    fYue: string;
-    { fDefinition: string; }
+    fHanzi: UTF8String;
+    fMandarin: UTF8String;
+    fYue: UTF8String;
+    { fDefinition: UTF8String; }
   public
-    constructor Create(rawEntry: string);
+    constructor Create(rawEntry: UTF8String);
 
-    property Hanzi: string read fHanzi;
-    property Mandarin: string read fMandarin;
-    property Yue: string read fYue;
+    property Hanzi: UTF8String read fHanzi;
+    property Mandarin: UTF8String read fMandarin;
+    property Yue: UTF8String read fYue;
     { property Definition: string read fDefinition; }
   end;
 
@@ -58,7 +58,7 @@ type
     entries: TEntryList;
     readings: TReadingDict;
 
-    function SearchText: string;
+    function SearchText: UTF8String;
     procedure setReportLabel(txt: string);
     procedure loadDictionary;
   public
@@ -74,29 +74,30 @@ implementation
 
 { TDictEntry }
 
-constructor TDictEntry.Create(rawEntry: string);
+constructor TDictEntry.Create(rawEntry: UTF8String);
 var
   startIdx, endIdx: longint;
   pair: TStringArray;
 begin
   { Substring and IndexOf use base 0 instead of the usual 1 }
-  startIdx := rawEntry.IndexOf('[');
-  endIdx := rawEntry.IndexOf(']');
+  startIdx := UTF8Pos(rawEntry, '[');
+  endIdx := utf8pos(rawEntry, ']');
 
-  self.fMandarin := rawEntry.Substring(startIdx + 1, endIdx - startIdx - 1);
+  self.fMandarin := UTF8Copy(rawEntry, startIdx + 1, endIdx - startIdx - 1);
 
-  pair := rawEntry
-    .substring(0, endIdx - startIdx)
+  pair := utf8copy(rawEntry, 1, endIdx - startIdx)
     .replace('，', '')
+    .replace('…', '')
     .trim
     .split(' ');
 
   self.fHanzi := pair[0];
 
-  startIdx := rawEntry.IndexOf('{');
-  endIdx := rawEntry.IndexOf('}');
+  startIdx := utf8pos(rawEntry, '{');
+  endIdx := utf8pos(rawEntry, '}');
 
-  self.fYue := rawEntry.Substring(startIdx + 1, endIdx - startIdx - 1)
+  self.fYue := utf8copy(rawEntry, startIdx + 1, endIdx - startIdx - 1)
+    .replace('…', '')
 end;
 
 { TForm1 }
@@ -106,6 +107,7 @@ var
   f: text;
   line: string;
   newEntry, entry: TDictEntry;
+  entryIdx: word;  { for debugging }
   strList: TStringList;
   syllables: TStringArray;
   a: word;
@@ -137,9 +139,11 @@ begin
 
   readings := TReadingDict.create;
 
+  entryIdx := 0;
+
   for entry in entries do begin
-    syllables := entry.Yue.Split(' ');
-    { syllables := SplitString(entry.Yue, ' '); }
+    { syllables := entry.Yue.Split(' '); }
+    syllables := SplitString(entry.Yue, ' ');
 
     for a := 1 to UTF8Length(entry.Hanzi) do begin
       c := UTF8Copy(entry.Hanzi, a, 1);
@@ -154,7 +158,9 @@ begin
         strList.Add(syllables[a - 1]);
         readings.add(c, strList);
       end;
-    end
+    end;
+
+    inc(entryIdx)
   end;
 end;
 
@@ -206,7 +212,7 @@ begin
   OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex]
 end;
 
-function TForm1.SearchText: string;
+function TForm1.SearchText: UTF8String;
 begin
   SearchText := trim(SearchEdit.Text)
 end;
@@ -234,7 +240,8 @@ begin
   end;
 
   for a:=0 to entries.count - 1 do begin
-    if entries[a].fYue.StartsWith(SearchText) then begin
+    { if entries[a].fYue.StartsWith(SearchText) then begin }
+    if UTF8Copy(entries[a].fYue, 1, UTF8Length(SearchText)) = SearchText then begin
       ResultList.Items.Add(entries[a].Hanzi);
       inc(count)
     end;
