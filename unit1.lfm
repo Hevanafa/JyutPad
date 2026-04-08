@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
   LCLVersion = '4.6.0.0'
+  OnClose = FormClose
   OnShow = FormShow
   object StatusBar1: TStatusBar
     Left = 0

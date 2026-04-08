@@ -43,6 +43,7 @@ type
     StatusBar1: TStatusBar;
     procedure ClearButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
@@ -116,6 +117,8 @@ begin
 
   for line in rawDict do
     entries.add(TDictEntry.Create(line));
+
+  rawDict.clear
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -128,7 +131,7 @@ begin
   ResultList.clear;
   OutputMemo.clear;
 
-  setReportLabel(format('Loaded %d entries', [rawDict.count]));
+  setReportLabel(format('Loaded %d entries', [entries.count]));
 
   { for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].yue); }
@@ -142,6 +145,12 @@ begin
   OutputMemo.SelLength := 0;
 
   setReportLabel('Copied to the clipboard!')
+end;
+
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  rawDict.free;
+  entries.free;
 end;
 
 procedure TForm1.ClearButtonClick(Sender: TObject);
