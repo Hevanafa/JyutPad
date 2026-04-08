@@ -41,6 +41,7 @@ type
     StatusBar1: TStatusBar;
     procedure FormShow(Sender: TObject);
     procedure ResultListDblClick(Sender: TObject);
+    procedure SearchEditChange(Sender: TObject);
   private
     rawDict: TStringList;
     entries: TEntryList;
@@ -124,7 +125,7 @@ begin
   setReportLabel(format('Loaded %d entries', [rawDict.count]));
 
   for a:=0 to 9 do
-    OutputMemo.Lines.add(entries[a].Hanzi);
+    OutputMemo.Lines.add(entries[a].yue);
 end;
 
 procedure TForm1.ResultListDblClick(Sender: TObject);
@@ -132,6 +133,28 @@ begin
   if ResultList.SelCount = 0 then exit;
 
   OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex];
+end;
+
+procedure TForm1.SearchEditChange(Sender: TObject);
+const
+  SearchLimit = 20;
+var
+  count: smallint;
+  a: word;
+begin
+  count := 0;
+  ResultList.clear;
+
+  if entries.count = 0 then exit;
+
+  for a:=0 to entries.count - 1 do begin
+    if entries[a].fYue.StartsWith(SearchEdit.text) then begin
+      ResultList.Items.Add(entries[a].Hanzi);
+      inc(count)
+    end;
+
+    if count >= SearchLimit then break;
+  end;
 end;
 
 procedure TForm1.setReportLabel(txt: string);
