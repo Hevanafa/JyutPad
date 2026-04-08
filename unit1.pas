@@ -9,7 +9,9 @@ interface
 uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, LCLType, Buttons, FGL;
+  ComCtrls, StdCtrls, LCLType, Buttons,
+  FGL,
+  StrUtils, LazUTF8;
 
 type
 
@@ -31,6 +33,7 @@ type
   end;
 
   TEntryList = specialize TFPGObjectList<TDictEntry>;
+  TReadingDict = specialize TFPGMap<string, TStringList>;
 
   { TForm1 }
 
@@ -41,6 +44,7 @@ type
     SearchEdit: TEdit;
     ResultList: TListBox;
     StatusBar1: TStatusBar;
+
     procedure ClearButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -52,6 +56,7 @@ type
   private
     rawDict: TStringList;
     entries: TEntryList;
+    readings: TReadingDict;
 
     function SearchText: string;
     procedure setReportLabel(txt: string);
@@ -80,7 +85,12 @@ begin
 
   self.fMandarin := rawEntry.Substring(startIdx + 1, endIdx - startIdx - 1);
 
-  pair := rawEntry.Substring(0, endIdx - startIdx).trim.split(' ');
+  pair := rawEntry
+    .substring(0, endIdx - startIdx)
+    .replace('，', '')
+    .trim
+    .split(' ');
+
   self.fHanzi := pair[0];
 
   startIdx := rawEntry.IndexOf('{');
@@ -95,7 +105,11 @@ procedure TForm1.loadDictionary;
 var
   f: text;
   line: string;
-  newEntry: TDictEntry;
+  newEntry, entry: TDictEntry;
+  strList: TStringList;
+  syllables: TStringArray;
+  a: word;
+  c: string;
 begin
   AssignFile(f, 'cccanto-webdist.txt');
   reset(f);
@@ -119,7 +133,29 @@ begin
   for line in rawDict do
     entries.add(TDictEntry.Create(line));
 
-  rawDict.clear
+  rawDict.clear;
+
+  readings := TReadingDict.create;
+
+  for entry in entries do begin
+    syllables := entry.Yue.Split(' ');
+    { syllables := SplitString(entry.Yue, ' '); }
+
+    for a := 1 to UTF8Length(entry.Hanzi) do begin
+      c := UTF8Copy(entry.Hanzi, a, 1);
+
+      if readings.IndexOf(c) >= 0 then begin
+        strList := readings[c];
+
+        if strList.IndexOf(syllables[a - 1]) < 0 then
+          strList.Add(syllables[a - 1]);
+      end else begin
+        strList := TStringList.create;
+        strList.Add(syllables[a - 1]);
+        readings.add(c, strList);
+      end;
+    end
+  end;
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -136,6 +172,15 @@ begin
 
   { for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].yue); }
+
+  { OutputMemo.Text := ; }
+end;
+    
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+  rawDict.free;
+  entries.free;
+  readings.free;
 end;
 
 procedure TForm1.CopyButtonClick(Sender: TObject);
@@ -146,12 +191,6 @@ begin
   OutputMemo.SelLength := 0;
 
   setReportLabel('Copied to the clipboard!')
-end;
-
-procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-begin
-  rawDict.free;
-  entries.free;
 end;
 
 procedure TForm1.ClearButtonClick(Sender: TObject);
