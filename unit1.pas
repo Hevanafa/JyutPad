@@ -59,15 +59,21 @@ implementation
 constructor TDictEntry.Create(rawEntry: string);
 var
   startIdx, endIdx: longint;
+  pair: TStringArray;
 begin
+  { Substring and IndexOf use base 0 instead of the usual 1 }
   startIdx := rawEntry.IndexOf('[');
   endIdx := rawEntry.IndexOf(']');
 
-  self.fHanzi := rawEntry.Substring(startIdx + 1, endIdx - startIdx - 1)
+  self.fMandarin := rawEntry.Substring(startIdx + 1, endIdx - startIdx - 1);
 
-  { TODO: Load Hanzi }
-  { TODO: Load Yue }
-  { TODO: Load definition }
+  pair := rawEntry.Substring(0, endIdx - startIdx).trim.split(' ');
+  self.fHanzi := pair[0];
+
+  startIdx := rawEntry.IndexOf('{');
+  endIdx := rawEntry.IndexOf('}');
+
+  self.fYue := rawEntry.Substring(startIdx + 1, endIdx - startIdx - 1)
 end;
 
 { TForm1 }
