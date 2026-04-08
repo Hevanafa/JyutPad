@@ -50,9 +50,10 @@ begin
     readln(f, line);
     if line.StartsWith('#') then continue;
 
-    dict.add(line)
-
-    { TODO: Trim trailing # }
+    if line.Contains('#') then begin
+      dict.add(line.Substring(1, line.IndexOf('#') - 1))
+    end else
+      dict.add(line);
   end;
 
   CloseFile(f)
