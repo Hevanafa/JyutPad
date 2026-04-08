@@ -27,9 +27,10 @@ object Form1: TForm1
   end
   object ResultList: TListBox
     Left = 8
-    Height = 272
+    Height = 282
     Top = 48
     Width = 200
+    Anchors = [akTop, akLeft, akBottom]
     ExtendedSelect = False
     ItemHeight = 0
     TabOrder = 2
@@ -47,9 +48,10 @@ object Form1: TForm1
   end
   object OutputMemo: TMemo
     Left = 216
-    Height = 274
+    Height = 282
     Top = 48
     Width = 256
+    Anchors = [akTop, akLeft, akRight, akBottom]
     Lines.Strings = (
       'OutputMemo'
     )
@@ -61,6 +63,7 @@ object Form1: TForm1
     Height = 30
     Top = 6
     Width = 30
+    Anchors = [akTop, akRight]
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
       2000000000000009000064000000640000000000000000000000FFFFFF00FFFF
@@ -146,6 +149,7 @@ object Form1: TForm1
     Height = 30
     Top = 6
     Width = 30
+    Anchors = [akTop, akRight]
     Glyph.Data = {
       36090000424D3609000000000000360000002800000018000000180000000100
       2000000000000009000064000000640000000000000000000000FFFFFF00FFFF

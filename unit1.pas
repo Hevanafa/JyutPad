@@ -130,8 +130,8 @@ begin
 
   setReportLabel(format('Loaded %d entries', [rawDict.count]));
 
-  for a:=0 to 9 do
-    OutputMemo.Lines.add(entries[a].yue);
+  { for a:=0 to 9 do
+    OutputMemo.Lines.add(entries[a].yue); }
 end;
 
 procedure TForm1.CopyButtonClick(Sender: TObject);
