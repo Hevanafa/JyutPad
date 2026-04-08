@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, FGL;
+  ComCtrls, StdCtrls, LCLType, FGL;
 
 type
 
@@ -42,6 +42,8 @@ type
     procedure FormShow(Sender: TObject);
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
+    procedure SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure appendSelectedEntry;
   private
     rawDict: TStringList;
     entries: TEntryList;
@@ -128,11 +130,16 @@ begin
     OutputMemo.Lines.add(entries[a].yue);
 end;
 
-procedure TForm1.ResultListDblClick(Sender: TObject);
+procedure TForm1.appendSelectedEntry;
 begin
   if ResultList.SelCount = 0 then exit;
 
-  OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex];
+  OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex]
+end;
+
+procedure TForm1.ResultListDblClick(Sender: TObject);
+begin
+  appendSelectedEntry
 end;
 
 procedure TForm1.SearchEditChange(Sender: TObject);
@@ -158,6 +165,12 @@ begin
 
   if ResultList.Count > 0 then
     ResultList.ItemIndex := 0;
+end;
+
+procedure TForm1.SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+begin
+  if key = VK_RETURN then
+    appendSelectedEntry;
 end;
 
 procedure TForm1.setReportLabel(txt: string);
