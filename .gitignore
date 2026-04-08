@@ -4,3 +4,5 @@ lib/
 *.lps
 *.exe
 *.dbg
+
+builds/

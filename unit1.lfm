@@ -1,11 +1,12 @@
 object Form1: TForm1
-  Left = 1850
+  Left = 400
   Height = 360
-  Top = 250
+  Top = 300
   Width = 480
-  Caption = 'JyutPad 0.1'
+  Caption = 'JyutPad 0.1 by Hevanafa (Apr 2026)'
   ClientHeight = 360
   ClientWidth = 480
+  DefaultMonitor = dmDesktop
   Font.CharSet = ANSI_CHARSET
   Font.Height = -16
   Font.Name = 'Microsoft JhengHei'

@@ -53,6 +53,7 @@ type
     rawDict: TStringList;
     entries: TEntryList;
 
+    function SearchText: string;
     procedure setReportLabel(txt: string);
     procedure loadDictionary;
   public
@@ -166,6 +167,11 @@ begin
   OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex]
 end;
 
+function TForm1.SearchText: string;
+begin
+  SearchText := trim(SearchEdit.Text)
+end;
+
 procedure TForm1.ResultListDblClick(Sender: TObject);
 begin
   appendSelectedEntry
@@ -183,8 +189,13 @@ begin
 
   if entries.count = 0 then exit;
 
+  if SearchText = '' then begin
+    ResultList.clear;
+    exit
+  end;
+
   for a:=0 to entries.count - 1 do begin
-    if entries[a].fYue.StartsWith(SearchEdit.text) then begin
+    if entries[a].fYue.StartsWith(SearchText) then begin
       ResultList.Items.Add(entries[a].Hanzi);
       inc(count)
     end;
