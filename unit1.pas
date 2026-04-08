@@ -155,6 +155,9 @@ begin
 
     if count >= SearchLimit then break;
   end;
+
+  if ResultList.Count > 0 then
+    ResultList.ItemIndex := 0;
 end;
 
 procedure TForm1.setReportLabel(txt: string);
