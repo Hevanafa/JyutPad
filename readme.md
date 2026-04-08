@@ -1,5 +1,7 @@
 #
 
+![preview](./preview.png)
+
 ## Credits
 
 This project includes the CC-Canto Cantonese dictionary dataset (based on CC-CEDICT)
