@@ -7,10 +7,17 @@ interface
 
 uses
   Classes, SysUtils, Forms,
-  Controls, Graphics, Dialogs;
+  Controls, Graphics, Dialogs, ComCtrls, StdCtrls;
 
 type
+
+  { TForm1 }
+
   TForm1 = class(TForm)
+    OutputMemo: TMemo;
+    SearchEdit: TEdit;
+    ResultList: TListBox;
+    StatusBar1: TStatusBar;
   private
 
   public
