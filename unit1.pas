@@ -9,7 +9,7 @@ interface
 uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, LCLType, FGL;
+  ComCtrls, StdCtrls, LCLType, Buttons, FGL;
 
 type
 
@@ -35,10 +35,15 @@ type
   { TForm1 }
 
   TForm1 = class(TForm)
+    CopyButton: TBitBtn;
+    ClearButton: TBitBtn;
+    ImageList1: TImageList;
     OutputMemo: TMemo;
     SearchEdit: TEdit;
     ResultList: TListBox;
     StatusBar1: TStatusBar;
+    procedure ClearButtonClick(Sender: TObject);
+    procedure CopyButtonClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
@@ -128,6 +133,18 @@ begin
 
   for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].yue);
+end;
+
+procedure TForm1.CopyButtonClick(Sender: TObject);
+begin
+  OutputMemo.CopyToClipboard;
+  setReportLabel('Copied to the clipboard!')
+end;
+
+procedure TForm1.ClearButtonClick(Sender: TObject);
+begin
+  OutputMemo.clear
+  setReportLabel('Cleared the output')
 end;
 
 procedure TForm1.appendSelectedEntry;
