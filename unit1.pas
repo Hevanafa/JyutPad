@@ -20,14 +20,14 @@ type
     fHanzi: string;
     fMandarin: string;
     fYue: string;
-    fDefinition: string;
+    { fDefinition: string; }
   public
     constructor Create(rawEntry: string);
 
     property Hanzi: string read fHanzi;
     property Mandarin: string read fMandarin;
     property Yue: string read fYue;
-    property Definition: string read fDefinition;
+    { property Definition: string read fDefinition; }
   end;
 
   TEntryList = specialize TFPGObjectList<TDictEntry>;
