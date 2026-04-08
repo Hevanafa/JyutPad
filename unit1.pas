@@ -18,8 +18,11 @@ type
     SearchEdit: TEdit;
     ResultList: TListBox;
     StatusBar1: TStatusBar;
+    procedure FormShow(Sender: TObject);
   private
+    dict: TStringList;
 
+    procedure loadDictionary;
   public
 
   end;
@@ -30,6 +33,41 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TForm1 }
+
+procedure TForm1.loadDictionary;
+var
+  f: text;
+  line: string;
+begin
+  AssignFile(f, 'cccanto-webdist.txt');
+  reset(f);
+
+  dict := TStringList.create;
+
+  while not eof(f) do begin
+    readln(f, line);
+    if line.StartsWith('#') then continue;
+
+    dict.add(line)
+
+    { TODO: Trim trailing # }
+  end;
+
+  CloseFile(f)
+end;
+
+procedure TForm1.FormShow(Sender: TObject);
+begin
+  loadDictionary;
+
+  SearchEdit.clear;
+  ResultList.clear;
+  OutputMemo.clear;
+
+  OutputMemo.Text := format('Loaded %d entries', [dict.count]);
+end;
 
 end.
 
