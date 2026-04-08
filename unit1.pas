@@ -37,7 +37,6 @@ type
   TForm1 = class(TForm)
     CopyButton: TBitBtn;
     ClearButton: TBitBtn;
-    ImageList1: TImageList;
     OutputMemo: TMemo;
     SearchEdit: TEdit;
     ResultList: TListBox;
@@ -137,13 +136,17 @@ end;
 
 procedure TForm1.CopyButtonClick(Sender: TObject);
 begin
+  OutputMemo.SelectAll;
   OutputMemo.CopyToClipboard;
+
+  OutputMemo.SelLength := 0;
+
   setReportLabel('Copied to the clipboard!')
 end;
 
 procedure TForm1.ClearButtonClick(Sender: TObject);
 begin
-  OutputMemo.clear
+  OutputMemo.clear;
   setReportLabel('Cleared the output')
 end;
 
