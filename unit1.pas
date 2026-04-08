@@ -32,16 +32,20 @@ type
 
   TEntryList = specialize TFPGObjectList<TDictEntry>;
 
+  { TForm1 }
+
   TForm1 = class(TForm)
     OutputMemo: TMemo;
     SearchEdit: TEdit;
     ResultList: TListBox;
     StatusBar1: TStatusBar;
     procedure FormShow(Sender: TObject);
+    procedure ResultListDblClick(Sender: TObject);
   private
     rawDict: TStringList;
     entries: TEntryList;
 
+    procedure setReportLabel(txt: string);
     procedure loadDictionary;
   public
 
@@ -105,7 +109,6 @@ begin
 
   for line in rawDict do
     entries.add(TDictEntry.Create(line));
-
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
@@ -118,10 +121,22 @@ begin
   ResultList.clear;
   OutputMemo.clear;
 
-  OutputMemo.Text := format('Loaded %d entries', [rawDict.count]);
+  setReportLabel(format('Loaded %d entries', [rawDict.count]));
 
   for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].Hanzi);
+end;
+
+procedure TForm1.ResultListDblClick(Sender: TObject);
+begin
+  if ResultList.SelCount = 0 then exit;
+
+  OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex];
+end;
+
+procedure TForm1.setReportLabel(txt: string);
+begin
+  StatusBar1.Panels[0].Text := txt
 end;
 
 end.
