@@ -2,6 +2,7 @@ unit UAppState;
 
 {$Mode ObjFPC}
 {$H+}{$J-}
+{$Notes OFF}
 
 interface
 
@@ -80,7 +81,6 @@ procedure TAppState.loadDictionary;
 var
   f: text;
   line: utf8string;
-  newEntry: TDictEntry;
 begin
   AssignFile(f, 'cccanto-webdist.txt');
   reset(f);
@@ -119,17 +119,17 @@ begin
 end;
 
 destructor TAppState.Destroy;
-var
-  a: word;
 begin
   { rawDict.free; }
   entries.free;
 
+  { Optional with TFPGMapObject }
   { if readings.count > 0 then
     for a:=0 to readings.count-1 do
-      readings.data[a].free; }
+      readings.data[a].free;
 
-  readings.clear;
+  readings.clear; }
+
   readings.free;
 
   inherited Destroy
