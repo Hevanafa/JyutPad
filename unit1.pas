@@ -70,11 +70,13 @@ begin
   setReportLabel(format('Loaded %d entries', [state.entries.count]));
 
   { Begin debug }
+
   { for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].yue); }
 
   { Show the possible readings }
 
+  {
   if state.readings.count > 0 then
     for a:=0 to state.readings.count-1 do begin
       list := state.readings.data[a];
@@ -87,6 +89,7 @@ begin
       OutputMemo.lines.add(
         format('%s: %s', [state.readings.keys[a], list.DelimitedText]));
     end;
+  }
 end;
     
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
