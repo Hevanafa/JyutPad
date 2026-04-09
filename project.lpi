@@ -83,9 +83,12 @@
         <UnitName Value="Unit1"/>
       </Unit>
       <Unit>
-        <Filename Value="snippets\test_utf8\logger.pas"/>
+        <Filename Value="logger.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="Logger"/>
+      </Unit>
+      <Unit>
+        <Filename Value="uappstate.pas"/>
+        <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
   </ProjectOptions>

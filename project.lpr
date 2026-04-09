@@ -5,7 +5,7 @@ program project;
 
 uses
   Interfaces,
-  Forms, Unit1;
+  Forms, Unit1, UAppState;
 
 {$R *.res}
 
