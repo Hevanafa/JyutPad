@@ -175,7 +175,7 @@ begin
 
   except
     on E: Exception do
-      OutputMemo.Text := e.message + ', when checking this line: ' + entry.yue;
+      OutputMemo.Text := format('Error on entry number %d: %s, when checking this hanzi: %s', [entryIdx, e.Message, entry.hanzi]);
   end;
 end;
 
@@ -185,7 +185,7 @@ var
   item: TStringList;
 begin
   loadDictionary;
-  { loadCharReadings; }
+  loadCharReadings;
 
   SearchEdit.clear;
   ResultList.clear;
