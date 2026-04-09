@@ -22,6 +22,7 @@ type
     OutputMemo: TMemo;
     SearchEdit: TEdit;
     ResultList: TListBox;
+    PlaceholderText: TStaticText;
     StatusBar1: TStatusBar;
     OneShotTimer: TTimer;
 
@@ -159,9 +160,11 @@ begin
 
   if SearchText = '' then begin
     ResultList.clear;
+    PlaceholderText.Visible := true;
     exit
   end;
 
+  PlaceholderText.Visible := false;
   ResultList.Items.AddStrings(state.SearchEntries(SearchText));
 
   if ResultList.Count > 0 then
