@@ -112,29 +112,6 @@ begin
   rawDict.free
 end;
 
-constructor TAppState.Create;
-begin
-  loadDictionary;
-  loadCharReadings
-end;
-
-destructor TAppState.Destroy;
-begin
-  { rawDict.free; }
-  entries.free;
-
-  { Optional with TFPGMapObject }
-  { if readings.count > 0 then
-    for a:=0 to readings.count-1 do
-      readings.data[a].free;
-
-  readings.clear; }
-
-  readings.free;
-
-  inherited Destroy
-end;
-
 procedure TAppState.loadCharReadings;
 var
   entryIdx: word;  { for debugging }
@@ -179,6 +156,29 @@ begin
       writeLog(s)
     end;
   end;
+end;
+
+constructor TAppState.Create;
+begin
+  loadDictionary;
+  loadCharReadings
+end;
+
+destructor TAppState.Destroy;
+begin
+  { rawDict.free; }
+  entries.free;
+
+  { Optional with TFPGMapObject }
+  { if readings.count > 0 then
+    for a:=0 to readings.count-1 do
+      readings.data[a].free;
+
+  readings.clear; }
+
+  readings.free;
+
+  inherited Destroy
 end;
 
 end.
