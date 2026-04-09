@@ -1,4 +1,4 @@
-unit Logger;
+unit ULogger;
 
 {$Mode ObjFPC}
 {$H+}{$J-}
