@@ -100,7 +100,9 @@ begin
   endIdx := utf8pos('}', rawEntry);
 
   self.fYue := utf8copy(rawEntry, startIdx + 1, endIdx - startIdx - 1)
+    .replace('，', '')
     .replace('…', '')
+    .replace(',', '')
 end;
 
 { TForm1 }
@@ -223,9 +225,15 @@ begin
 end;
     
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  a: word;
 begin
   { rawDict.free; }
   entries.free;
+
+  if readings.count > 0 then
+    for a:=0 to readings.count-1 do
+      readings.data[a].free;
   readings.free;
 
   closeLogger
@@ -283,7 +291,7 @@ begin
 
   for a:=0 to entries.count - 1 do begin
     { if entries[a].fYue.StartsWith(SearchText) then begin }
-    if UTF8Pos(SearchText, entries[a].fYue) = 1 then begin
+    if UTF8StartsText(SearchText, entries[a].fYue) then begin
       ResultList.Items.Add(entries[a].Hanzi);
       inc(count)
     end;
