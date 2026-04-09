@@ -25,7 +25,7 @@ type
   end;
 
   TEntryList = specialize TFPGObjectList<TDictEntry>;
-  TReadingDict = specialize TFPGMap<UTF8String, TStringList>;
+  TReadingDict = specialize TFPGMapObject<UTF8String, TStringList>;
 
   { TAppState }
 
@@ -125,9 +125,11 @@ begin
   { rawDict.free; }
   entries.free;
 
-  if readings.count > 0 then
+  { if readings.count > 0 then
     for a:=0 to readings.count-1 do
-      readings.data[a].free;
+      readings.data[a].free; }
+
+  readings.clear;
   readings.free;
 
   inherited Destroy
@@ -143,7 +145,7 @@ var
   c: utf8string;
   s: string;
 begin
-  readings := TReadingDict.create;
+  readings := TReadingDict.create(true);
   entryIdx := 0;
 
   try
@@ -171,7 +173,9 @@ begin
   except
     on E: Exception do begin
       s := format('Error on entry number %d: %s, when checking this hanzi: %s', [entryIdx, e.Message, entry.hanzi]);
-      { OutputMemo.lines.add(s); }
+
+      if strList <> nil then strList.free;
+
       writeLog(s)
     end;
   end;
