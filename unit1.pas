@@ -10,7 +10,7 @@ uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, LCLType,
-  Buttons, FGL, StrUtils, LazUTF8,
+  Buttons, ExtCtrls, FGL, StrUtils, LazUTF8,
   UAppState, ULogger;
 
 type
@@ -23,12 +23,14 @@ type
     SearchEdit: TEdit;
     ResultList: TListBox;
     StatusBar1: TStatusBar;
+    OneShotTimer: TTimer;
 
     procedure ClearButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
 
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure OneShotTimerTimer(Sender: TObject);
 
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
@@ -54,29 +56,41 @@ implementation
 { TForm1 }
 
 procedure TForm1.FormShow(Sender: TObject);
-var
-  a: word;
-  list: TStringList;
 begin
   initLogger;
+
+end;
+    
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  a: word;
+begin
+  state.free;
+
+  closeLogger
+end;
+
+procedure TForm1.OneShotTimerTimer(Sender: TObject);
+begin
+  OneShotTimer.Enabled := false;
+
+  SearchEdit.ReadOnly := true;
+
   { writelog('Test logger!'); }
 
   state := TAppState.create;
 
   setReportLabel('Loading dictionary...');
-  Invalidate;
   Application.ProcessMessages;
   state.loadDictionary;
-  Sleep(1000);
 
   setReportLabel('Loading Jyutping readings...');
-  Invalidate;
   Application.ProcessMessages;
   state.loadCharReadings;
-  Sleep(1000);
 
   setReportLabel(format('Loaded %d entries', [state.EntryCount]));
 
+  SearchEdit.ReadOnly := false;
   SearchEdit.clear;
   ResultList.clear;
   OutputMemo.clear;
@@ -102,15 +116,6 @@ begin
         format('%s: %s', [state.readings.keys[a], list.DelimitedText]));
     end;
   }
-end;
-    
-procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-var
-  a: word;
-begin
-  state.free;
-
-  closeLogger
 end;
 
 procedure TForm1.CopyButtonClick(Sender: TObject);
