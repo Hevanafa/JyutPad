@@ -9,9 +9,9 @@ interface
 uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs,
-  ComCtrls, StdCtrls, LCLType, Buttons,
-  FGL,
-  StrUtils, LazUTF8;
+  ComCtrls, StdCtrls, LCLType,
+  Buttons, FGL, StrUtils, LazUTF8,
+  Logger;
 
 type
 
@@ -47,8 +47,10 @@ type
 
     procedure ClearButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
-    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+
     procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
     procedure SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -147,6 +149,7 @@ var
   syllables: TStringArray;
   a: word;
   c: utf8string;
+  s: string;
 begin
   readings := TReadingDict.create;
   entryIdx := 0;
@@ -174,8 +177,11 @@ begin
     end;
 
   except
-    on E: Exception do
-      OutputMemo.Text := format('Error on entry number %d: %s, when checking this hanzi: %s', [entryIdx, e.Message, entry.hanzi]);
+    on E: Exception do begin
+      s := format('Error on entry number %d: %s, when checking this hanzi: %s', [entryIdx, e.Message, entry.hanzi]);
+      { OutputMemo.lines.add(s); }
+      writeLog(s)
+    end;
   end;
 end;
 
@@ -184,12 +190,15 @@ var
   a: word;
   item: TStringList;
 begin
+  initLogger;
+  { writelog('Test logger!'); }
+
   loadDictionary;
   loadCharReadings;
 
   SearchEdit.clear;
   ResultList.clear;
-  { OutputMemo.clear; }
+  OutputMemo.clear;
 
   setReportLabel(format('Loaded %d entries', [entries.count]));
 
@@ -205,6 +214,8 @@ begin
   { rawDict.free; }
   entries.free;
   readings.free;
+
+  closeLogger
 end;
 
 procedure TForm1.CopyButtonClick(Sender: TObject);
