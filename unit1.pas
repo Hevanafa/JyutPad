@@ -207,14 +207,19 @@ begin
     OutputMemo.Lines.add(entries[a].yue); }
 
   { Show the possible readings }
-  for a:=0 to 9 do begin
-    list := readings.data[a];
-    list.Delimiter := ',';
-    list.StrictDelimiter := true;
 
-    OutputMemo.lines.add(
-      format('%s: %s', [readings.keys[a], list.DelimitedText]));
-  end;
+  if readings.count > 0 then
+    for a:=0 to readings.count-1 do begin
+      list := readings.data[a];
+
+      if list.count = 1 then continue;
+
+      list.Delimiter := ',';
+      list.StrictDelimiter := true;
+
+      OutputMemo.lines.add(
+        format('%s: %s', [readings.keys[a], list.DelimitedText]));
+    end;
 end;
     
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
