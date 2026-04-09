@@ -61,6 +61,7 @@ type
     function SearchText: UTF8String;
     procedure setReportLabel(txt: string);
     procedure loadDictionary;
+    procedure loadCharReadings;
   public
 
   end;
@@ -106,12 +107,7 @@ procedure TForm1.loadDictionary;
 var
   f: text;
   line: utf8string;
-  newEntry, entry: TDictEntry;
-  entryIdx: word;  { for debugging }
-  strList: TStringList;
-  syllables: TStringArray;
-  a: word;
-  c: utf8string;
+  newEntry: TDictEntry;
 begin
   AssignFile(f, 'cccanto-webdist.txt');
   reset(f);
@@ -131,8 +127,8 @@ begin
 
   CloseFile(f);
 
-  for a:=0 to 19 do
-    OutputMemo.Lines.add(IntToStr(UTF8Pos('#', rawDict[a])));
+  { for a:=0 to 19 do
+    OutputMemo.Lines.add(IntToStr(UTF8Pos('#', rawDict[a]))); }
 
   entries := TEntryList.create;
 
@@ -140,32 +136,42 @@ begin
     entries.add(TDictEntry.Create(line));
 
   rawDict.clear;
+  rawDict.free
+end;
 
+procedure TForm1.loadCharReadings;
+var
+  entryIdx: word;  { for debugging }
+  entry: TDictEntry;
+  strList: TStringList;
+  syllables: TStringArray;
+  a: word;
+  c: utf8string;
+begin
   readings := TReadingDict.create;
-
   entryIdx := 0;
 
   try
-  for entry in entries do begin
-    syllables := SplitString(entry.Yue, ' ');
+    for entry in entries do begin
+      syllables := SplitString(entry.Yue, ' ');
 
-    for a := 1 to UTF8Length(entry.Hanzi) do begin
-      c := UTF8Copy(entry.Hanzi, a, 1);
+      for a := 1 to UTF8Length(entry.Hanzi) do begin
+        c := UTF8Copy(entry.Hanzi, a, 1);
 
-      if readings.IndexOf(c) >= 0 then begin
-        strList := readings[c];
+        if readings.IndexOf(c) >= 0 then begin
+          strList := readings[c];
 
-        if strList.IndexOf(syllables[a - 1]) < 0 then
+          if strList.IndexOf(syllables[a - 1]) < 0 then
+            strList.Add(syllables[a - 1]);
+        end else begin
+          strList := TStringList.create;
           strList.Add(syllables[a - 1]);
-      end else begin
-        strList := TStringList.create;
-        strList.Add(syllables[a - 1]);
-        readings.add(c, strList);
+          readings.add(c, strList);
+        end;
       end;
-    end;
 
-    inc(entryIdx)
-  end;
+      inc(entryIdx)
+    end;
 
   except
     on E: Exception do
@@ -179,6 +185,7 @@ var
   item: TStringList;
 begin
   loadDictionary;
+  { loadCharReadings; }
 
   SearchEdit.clear;
   ResultList.clear;
@@ -195,7 +202,7 @@ end;
     
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  rawDict.free;
+  { rawDict.free; }
   entries.free;
   readings.free;
 end;
