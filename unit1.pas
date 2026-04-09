@@ -188,7 +188,7 @@ end;
 procedure TForm1.FormShow(Sender: TObject);
 var
   a: word;
-  item: TStringList;
+  list: TStringList;
 begin
   initLogger;
   { writelog('Test logger!'); }
@@ -202,11 +202,19 @@ begin
 
   setReportLabel(format('Loaded %d entries', [entries.count]));
 
+  { Begin debug }
   { for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].yue); }
 
-  { item := TStringList(readings.items[0]);
-  OutputMemo.Text := item[0]; }
+  { Show the possible readings }
+  for a:=0 to 9 do begin
+    list := readings.data[a];
+    list.Delimiter := ',';
+    list.StrictDelimiter := true;
+
+    OutputMemo.lines.add(
+      format('%s: %s', [readings.keys[a], list.DelimitedText]));
+  end;
 end;
     
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
