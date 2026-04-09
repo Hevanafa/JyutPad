@@ -18,8 +18,8 @@
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="1"/>
-      <StringTable CompanyName="Hevanafa" LegalCopyright="Copyright 2026 Hevanafa" ProductName="JyutPad" ProductVersion="0.1"/>
+      <MinorVersionNr Value="2"/>
+      <StringTable CompanyName="Hevanafa" LegalCopyright="Copyright 2026 Hevanafa" ProductName="JyutPad" ProductVersion="0.2"/>
     </VersionInfo>
     <BuildModes>
       <Item Name="Debug" Default="True"/>
