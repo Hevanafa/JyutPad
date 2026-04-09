@@ -35,14 +35,10 @@ type
     procedure SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure appendSelectedEntry;
   private
-    rawDict: TStringList;
-    entries: TEntryList;
-    readings: TReadingDict;
+    state: TAppState;
 
     function SearchText: UTF8String;
     procedure setReportLabel(txt: string);
-    procedure loadDictionary;
-    procedure loadCharReadings;
   public
 
   end;
@@ -57,86 +53,6 @@ implementation
 
 { TForm1 }
 
-procedure TForm1.loadDictionary;
-var
-  f: text;
-  line: utf8string;
-  newEntry: TDictEntry;
-begin
-  AssignFile(f, 'cccanto-webdist.txt');
-  reset(f);
-
-  rawDict := TStringList.create;
-
-  while not eof(f) do begin
-    readln(f, line);
-
-    if UTF8Pos('#', line) = 1 then continue;
-
-    if UTF8Pos('#', line) > 0 then begin
-      rawDict.add(UTF8Copy(line, 1, utf8pos('#', line) - 1))
-    end else
-      rawDict.add(line);
-  end;
-
-  CloseFile(f);
-
-  { for a:=0 to 19 do
-    OutputMemo.Lines.add(IntToStr(UTF8Pos('#', rawDict[a]))); }
-
-  entries := TEntryList.create;
-
-  for line in rawDict do
-    entries.add(TDictEntry.Create(line));
-
-  rawDict.clear;
-  rawDict.free
-end;
-
-procedure TForm1.loadCharReadings;
-var
-  entryIdx: word;  { for debugging }
-  entry: TDictEntry;
-  strList: TStringList;
-  syllables: TStringArray;
-  a: word;
-  c: utf8string;
-  s: string;
-begin
-  readings := TReadingDict.create;
-  entryIdx := 0;
-
-  try
-    for entry in entries do begin
-      syllables := SplitString(entry.Yue, ' ');
-
-      for a := 1 to UTF8Length(entry.Hanzi) do begin
-        c := UTF8Copy(entry.Hanzi, a, 1);
-
-        if readings.IndexOf(c) >= 0 then begin
-          strList := readings[c];
-
-          if strList.IndexOf(syllables[a - 1]) < 0 then
-            strList.Add(syllables[a - 1]);
-        end else begin
-          strList := TStringList.create;
-          strList.Add(syllables[a - 1]);
-          readings.add(c, strList);
-        end;
-      end;
-
-      inc(entryIdx)
-    end;
-
-  except
-    on E: Exception do begin
-      s := format('Error on entry number %d: %s, when checking this hanzi: %s', [entryIdx, e.Message, entry.hanzi]);
-      { OutputMemo.lines.add(s); }
-      writeLog(s)
-    end;
-  end;
-end;
-
 procedure TForm1.FormShow(Sender: TObject);
 var
   a: word;
@@ -145,14 +61,13 @@ begin
   initLogger;
   { writelog('Test logger!'); }
 
-  loadDictionary;
-  loadCharReadings;
+  state := TAppState.create;
 
   SearchEdit.clear;
   ResultList.clear;
   OutputMemo.clear;
 
-  setReportLabel(format('Loaded %d entries', [entries.count]));
+  setReportLabel(format('Loaded %d entries', [state.entries.count]));
 
   { Begin debug }
   { for a:=0 to 9 do
@@ -160,9 +75,9 @@ begin
 
   { Show the possible readings }
 
-  if readings.count > 0 then
-    for a:=0 to readings.count-1 do begin
-      list := readings.data[a];
+  if state.readings.count > 0 then
+    for a:=0 to state.readings.count-1 do begin
+      list := state.readings.data[a];
 
       if list.count = 1 then continue;
 
@@ -170,7 +85,7 @@ begin
       list.StrictDelimiter := true;
 
       OutputMemo.lines.add(
-        format('%s: %s', [readings.keys[a], list.DelimitedText]));
+        format('%s: %s', [state.readings.keys[a], list.DelimitedText]));
     end;
 end;
     
@@ -178,13 +93,7 @@ procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   a: word;
 begin
-  { rawDict.free; }
-  entries.free;
-
-  if readings.count > 0 then
-    for a:=0 to readings.count-1 do
-      readings.data[a].free;
-  readings.free;
+  state.free;
 
   closeLogger
 end;
@@ -232,17 +141,17 @@ begin
   count := 0;
   ResultList.clear;
 
-  if entries.count = 0 then exit;
+  if state.entries.count = 0 then exit;
 
   if SearchText = '' then begin
     ResultList.clear;
     exit
   end;
 
-  for a:=0 to entries.count - 1 do begin
+  for a:=0 to state.entries.count - 1 do begin
     { if entries[a].fYue.StartsWith(SearchText) then begin }
-    if UTF8StartsText(SearchText, entries[a].Yue) then begin
-      ResultList.Items.Add(entries[a].Hanzi);
+    if UTF8StartsText(SearchText, state.entries[a].Yue) then begin
+      ResultList.Items.Add(state.entries[a].Hanzi);
       inc(count)
     end;
 
