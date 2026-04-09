@@ -1,6 +1,6 @@
 #
 
-![preview](./preview.png)
+![preview](./v0.2_preview.png)
 
 ## Credits
 
