@@ -83,12 +83,14 @@
         <UnitName Value="Unit1"/>
       </Unit>
       <Unit>
-        <Filename Value="logger.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="uappstate.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="UAppState"/>
+      </Unit>
+      <Unit>
+        <Filename Value="ulogger.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ULogger"/>
       </Unit>
     </Units>
   </ProjectOptions>
