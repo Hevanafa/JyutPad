@@ -32,14 +32,16 @@ type
 
   TAppState = class
   private
+    fRawDict: TStringList;
+    fEntries: TEntryList;
+    fReadings: TReadingDict;
+
+  public
     procedure loadCharReadings;
     procedure loadDictionary;
-  public
-    rawDict: TStringList;
-    entries: TEntryList;
-    readings: TReadingDict;
 
     function SearchEntries(const searchTerm: string): TStringArray;
+    function EntryCount: integer;
 
     constructor Create;
     destructor Destroy; override;
@@ -87,7 +89,7 @@ begin
   AssignFile(f, 'cccanto-webdist.txt');
   reset(f);
 
-  rawDict := TStringList.create;
+  fRawDict := TStringList.create;
 
   while not eof(f) do begin
     readln(f, line);
@@ -95,23 +97,23 @@ begin
     if UTF8Pos('#', line) = 1 then continue;
 
     if UTF8Pos('#', line) > 0 then begin
-      rawDict.add(UTF8Copy(line, 1, utf8pos('#', line) - 1))
+      fRawDict.add(UTF8Copy(line, 1, utf8pos('#', line) - 1))
     end else
-      rawDict.add(line);
+      fRawDict.add(line);
   end;
 
   CloseFile(f);
 
   { for a:=0 to 19 do
-    OutputMemo.Lines.add(IntToStr(UTF8Pos('#', rawDict[a]))); }
+    OutputMemo.Lines.add(IntToStr(UTF8Pos('#', fRawDict[a]))); }
 
-  entries := TEntryList.create;
+  fEntries := TEntryList.create;
 
-  for line in rawDict do
-    entries.add(TDictEntry.Create(line));
+  for line in fRawDict do
+    fEntries.add(TDictEntry.Create(line));
 
-  rawDict.clear;
-  rawDict.free
+  fRawDict.clear;
+  fRawDict.free
 end;
 
 function TAppState.SearchEntries(const searchTerm: string): TStringArray;
@@ -127,12 +129,12 @@ begin
 
   if UTF8Pos(' ', searchTerm) = 0 then begin
     { Perform search per-character by reading }
-    if readings.Count > 0 then
-      for row:=0 to readings.count - 1 do begin
-        for col:=0 to readings.data[row].count-1 do begin
-          if UTF8StartsText(searchTerm, readings.data[row][col]) then begin
+    if fReadings.Count > 0 then
+      for row:=0 to fReadings.count - 1 do begin
+        for col:=0 to fReadings.data[row].count-1 do begin
+          if UTF8StartsText(searchTerm, fReadings.data[row][col]) then begin
             SetLength(SearchEntries, length(SearchEntries) + 1);
-            SearchEntries[high(SearchEntries)] := readings.keys[row];
+            SearchEntries[high(SearchEntries)] := fReadings.keys[row];
 
             inc(count)
           end;
@@ -144,16 +146,21 @@ begin
       end;
   end;
 
-  for a:=0 to entries.count - 1 do begin
-    if UTF8StartsText(searchTerm, entries[a].Yue) then begin
+  for a:=0 to fEntries.count - 1 do begin
+    if UTF8StartsText(searchTerm, fEntries[a].Yue) then begin
       SetLength(SearchEntries, length(SearchEntries) + 1);
-      SearchEntries[high(SearchEntries)] := entries[a].Hanzi;
+      SearchEntries[high(SearchEntries)] := fEntries[a].Hanzi;
 
       inc(count)
     end;
 
     if count >= SearchLimit then break;
   end;
+end;
+
+function TAppState.EntryCount: integer;
+begin
+  EntryCount := fEntries.Count
 end;
 
 procedure TAppState.loadCharReadings;
@@ -166,25 +173,25 @@ var
   c: utf8string;
   s: string;
 begin
-  readings := TReadingDict.create(true);
+  fReadings := TReadingDict.create(true);
   entryIdx := 0;
 
   try
-    for entry in entries do begin
+    for entry in fEntries do begin
       syllables := SplitString(entry.Yue, ' ');
 
       for a := 1 to UTF8Length(entry.Hanzi) do begin
         c := UTF8Copy(entry.Hanzi, a, 1);
 
-        if readings.IndexOf(c) >= 0 then begin
-          strList := readings[c];
+        if fReadings.IndexOf(c) >= 0 then begin
+          strList := fReadings[c];
 
           if strList.IndexOf(syllables[a - 1]) < 0 then
             strList.Add(syllables[a - 1]);
         end else begin
           strList := TStringList.create;
           strList.Add(syllables[a - 1]);
-          readings.add(c, strList);
+          fReadings.add(c, strList);
         end;
       end;
 
@@ -204,23 +211,23 @@ end;
 
 constructor TAppState.Create;
 begin
-  loadDictionary;
-  loadCharReadings
+  { loadDictionary;
+  loadCharReadings }
 end;
 
 destructor TAppState.Destroy;
 begin
-  { rawDict.free; }
-  entries.free;
+  { fRawDict.free; }
+  fEntries.free;
 
   { Optional with TFPGMapObject }
-  { if readings.count > 0 then
-    for a:=0 to readings.count-1 do
-      readings.data[a].free;
+  { if fReadings.count > 0 then
+    for a:=0 to fReadings.count-1 do
+      fReadings.data[a].free;
 
-  readings.clear; }
+  fReadings.clear; }
 
-  readings.free;
+  fReadings.free;
 
   inherited Destroy
 end;

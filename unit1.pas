@@ -63,11 +63,23 @@ begin
 
   state := TAppState.create;
 
+  setReportLabel('Loading dictionary...');
+  Invalidate;
+  Application.ProcessMessages;
+  state.loadDictionary;
+  Sleep(1000);
+
+  setReportLabel('Loading Jyutping readings...');
+  Invalidate;
+  Application.ProcessMessages;
+  state.loadCharReadings;
+  Sleep(1000);
+
+  setReportLabel(format('Loaded %d entries', [state.EntryCount]));
+
   SearchEdit.clear;
   ResultList.clear;
   OutputMemo.clear;
-
-  setReportLabel(format('Loaded %d entries', [state.entries.count]));
 
   { Begin debug }
 
@@ -138,7 +150,7 @@ procedure TForm1.SearchEditChange(Sender: TObject);
 begin
   ResultList.clear;
 
-  if state.entries.count = 0 then exit;
+  if state.EntryCount = 0 then exit;
 
   if SearchText = '' then begin
     ResultList.clear;
