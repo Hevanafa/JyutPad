@@ -39,6 +39,8 @@ type
     entries: TEntryList;
     readings: TReadingDict;
 
+    function SearchEntries(const searchTerm: string): TStringArray;
+
     constructor Create;
     destructor Destroy; override;
   end;
@@ -110,6 +112,48 @@ begin
 
   rawDict.clear;
   rawDict.free
+end;
+
+function TAppState.SearchEntries(const searchTerm: string): TStringArray;
+const
+  SearchLimit = 20;
+var
+  count: word;
+  a: word;
+  row, col: word;
+begin
+  count := 0;
+  SetLength(SearchEntries, 0);
+
+  if UTF8Pos(' ', searchTerm) = 0 then begin
+    { Perform search per-character by reading }
+    if readings.Count > 0 then
+      for row:=0 to readings.count - 1 do begin
+        for col:=0 to readings.data[row].count-1 do begin
+          if UTF8StartsText(searchTerm, readings.data[row][col]) then begin
+            SetLength(SearchEntries, length(SearchEntries) + 1);
+            SearchEntries[high(SearchEntries)] := readings.keys[row];
+
+            inc(count)
+          end;
+
+          if count >= SearchLimit then break;
+        end;
+
+        if count >= SearchLimit then break;
+      end;
+  end;
+
+  for a:=0 to entries.count - 1 do begin
+    if UTF8StartsText(searchTerm, entries[a].Yue) then begin
+      SetLength(SearchEntries, length(SearchEntries) + 1);
+      SearchEntries[high(SearchEntries)] := entries[a].Hanzi;
+
+      inc(count)
+    end;
+
+    if count >= SearchLimit then break;
+  end;
 end;
 
 procedure TAppState.loadCharReadings;

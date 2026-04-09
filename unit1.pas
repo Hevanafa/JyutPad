@@ -132,14 +132,7 @@ begin
 end;
 
 procedure TForm1.SearchEditChange(Sender: TObject);
-const
-  SearchLimit = 20;
-var
-  count: smallint;
-  a: word;
-  row, col: word;
 begin
-  count := 0;
   ResultList.clear;
 
   if state.entries.count = 0 then exit;
@@ -149,31 +142,7 @@ begin
     exit
   end;
 
-  if UTF8Pos(' ', SearchText) = 0 then begin
-    { Perform search per-character by reading }
-    if state.readings.Count > 0 then
-      for row:=0 to state.readings.count - 1 do begin
-        for col:=0 to state.readings.data[row].count-1 do begin
-          if UTF8StartsText(SearchText, state.readings.data[row][col]) then begin
-            ResultList.items.add(state.readings.keys[row]);
-            inc(count)
-          end;
-
-          if count >= SearchLimit then break;
-        end;
-
-        if count >= SearchLimit then break;
-      end;
-  end;
-
-  for a:=0 to state.entries.count - 1 do begin
-    if UTF8StartsText(SearchText, state.entries[a].Yue) then begin
-      ResultList.Items.Add(state.entries[a].Hanzi);
-      inc(count)
-    end;
-
-    if count >= SearchLimit then break;
-  end;
+  ResultList.Items.AddStrings(state.SearchEntries(SearchText));
 
   if ResultList.Count > 0 then
     ResultList.ItemIndex := 0;
