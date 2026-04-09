@@ -80,8 +80,8 @@ var
   pair: TStringArray;
 begin
   { Substring and IndexOf use base 0 instead of the usual 1 }
-  startIdx := UTF8Pos(rawEntry, '[');
-  endIdx := utf8pos(rawEntry, ']');
+  startIdx := UTF8Pos('[', rawEntry);
+  endIdx := utf8pos(']', rawEntry);
 
   self.fMandarin := UTF8Copy(rawEntry, startIdx + 1, endIdx - startIdx - 1);
 
@@ -93,8 +93,8 @@ begin
 
   self.fHanzi := pair[0];
 
-  startIdx := utf8pos(rawEntry, '{');
-  endIdx := utf8pos(rawEntry, '}');
+  startIdx := utf8pos('{', rawEntry);
+  endIdx := utf8pos('}', rawEntry);
 
   self.fYue := utf8copy(rawEntry, startIdx + 1, endIdx - startIdx - 1)
     .replace('…', '')
@@ -121,15 +121,18 @@ begin
   while not eof(f) do begin
     readln(f, line);
 
-    if UTF8StartsText(line, '#') then continue;
+    if UTF8Pos('#', line) = 1 then continue;
 
-    if UTF8Pos(line, '#') > 0 then begin
-      rawDict.add(UTF8Copy(line, 1, utf8pos(line, '#')))
+    if UTF8Pos('#', line) > 0 then begin
+      rawDict.add(UTF8Copy(line, 1, utf8pos('#', line) - 1))
     end else
       rawDict.add(line);
   end;
 
   CloseFile(f);
+
+  for a:=0 to 19 do
+    OutputMemo.Lines.add(IntToStr(UTF8Pos('#', rawDict[a])));
 
   entries := TEntryList.create;
 
@@ -166,7 +169,7 @@ begin
 
   except
     on E: Exception do
-      OutputMemo.Text := e.message;
+      OutputMemo.Text := e.message + ', when checking this line: ' + entry.yue;
   end;
 end;
 
@@ -179,7 +182,7 @@ begin
 
   SearchEdit.clear;
   ResultList.clear;
-  OutputMemo.clear;
+  { OutputMemo.clear; }
 
   setReportLabel(format('Loaded %d entries', [entries.count]));
 
@@ -249,7 +252,7 @@ begin
 
   for a:=0 to entries.count - 1 do begin
     { if entries[a].fYue.StartsWith(SearchText) then begin }
-    if UTF8Copy(entries[a].fYue, 1, UTF8Length(SearchText)) = SearchText then begin
+    if UTF8Pos(SearchText, entries[a].fYue) = 1 then begin
       ResultList.Items.Add(entries[a].Hanzi);
       inc(count)
     end;
