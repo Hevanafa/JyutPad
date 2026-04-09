@@ -33,7 +33,7 @@ type
   end;
 
   TEntryList = specialize TFPGObjectList<TDictEntry>;
-  TReadingDict = specialize TFPGMap<string, TStringList>;
+  TReadingDict = specialize TFPGMap<UTF8String, TStringList>;
 
   { TForm1 }
 
@@ -105,13 +105,13 @@ end;
 procedure TForm1.loadDictionary;
 var
   f: text;
-  line: string;
+  line: utf8string;
   newEntry, entry: TDictEntry;
   entryIdx: word;  { for debugging }
   strList: TStringList;
   syllables: TStringArray;
   a: word;
-  c: string;
+  c: utf8string;
 begin
   AssignFile(f, 'cccanto-webdist.txt');
   reset(f);
@@ -120,10 +120,11 @@ begin
 
   while not eof(f) do begin
     readln(f, line);
-    if line.StartsWith('#') then continue;
 
-    if line.Contains('#') then begin
-      rawDict.add(line.Substring(1, line.IndexOf('#') - 1))
+    if UTF8StartsText(line, '#') then continue;
+
+    if UTF8Pos(line, '#') > 0 then begin
+      rawDict.add(UTF8Copy(line, 1, utf8pos(line, '#')))
     end else
       rawDict.add(line);
   end;
@@ -141,8 +142,8 @@ begin
 
   entryIdx := 0;
 
+  try
   for entry in entries do begin
-    { syllables := entry.Yue.Split(' '); }
     syllables := SplitString(entry.Yue, ' ');
 
     for a := 1 to UTF8Length(entry.Hanzi) do begin
@@ -162,11 +163,17 @@ begin
 
     inc(entryIdx)
   end;
+
+  except
+    on E: Exception do
+      OutputMemo.Text := e.message;
+  end;
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
 var
   a: word;
+  item: TStringList;
 begin
   loadDictionary;
 
@@ -179,7 +186,8 @@ begin
   { for a:=0 to 9 do
     OutputMemo.Lines.add(entries[a].yue); }
 
-  { OutputMemo.Text := ; }
+  { item := TStringList(readings.items[0]);
+  OutputMemo.Text := item[0]; }
 end;
     
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
