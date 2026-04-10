@@ -39,6 +39,7 @@ type
     procedure appendSelectedEntry;
   private
     state: TAppState;
+    lastSearchText: string;
 
     function SearchText: UTF8String;
     procedure setReportLabel(txt: string);
@@ -149,26 +150,29 @@ end;
 
 procedure TForm1.ResultListDblClick(Sender: TObject);
 begin
-  appendSelectedEntry
+  appendSelectedEntry;
+  SearchEdit.SetFocus
 end;
 
 procedure TForm1.SearchEditChange(Sender: TObject);
 begin
-  ResultList.clear;
-
   if state.EntryCount = 0 then exit;
 
-  if SearchText = '' then begin
+  if lastSearchText <> SearchText then begin
+    lastSearchText := SearchText;
+
     ResultList.clear;
-    PlaceholderText.Visible := true;
-    exit
+
+    if SearchText = '' then begin
+      PlaceholderText.Visible := true;
+    end else
+      PlaceholderText.Visible := false;
+
+    ResultList.Items.AddStrings(state.SearchEntries(SearchText));
+
+    if ResultList.Count > 0 then
+      ResultList.ItemIndex := 0;
   end;
-
-  PlaceholderText.Visible := false;
-  ResultList.Items.AddStrings(state.SearchEntries(SearchText));
-
-  if ResultList.Count > 0 then
-    ResultList.ItemIndex := 0;
 end;
 
 procedure TForm1.SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
