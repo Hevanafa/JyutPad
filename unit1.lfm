@@ -243,6 +243,7 @@ object Form1: TForm1
     Color = clDefault
     ParentColor = False
     TabOrder = 6
+    OnClick = PlaceholderTextClick
   end
   object OneShotTimer: TTimer
     Interval = 500

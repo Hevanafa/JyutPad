@@ -33,6 +33,7 @@ type
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
 
     procedure OneShotTimerTimer(Sender: TObject);
+    procedure PlaceholderTextClick(Sender: TObject);
 
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
@@ -44,7 +45,9 @@ type
     lastSearchText: string;
 
     procedure loadSavedOutput;
+    procedure loadSavedQuery;
     procedure saveLastOutput;
+    procedure saveLastQuery;
 
     procedure setReportLabel(txt: string);
     function SearchText: UTF8String;
@@ -70,6 +73,7 @@ end;
 
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
+  saveLastQuery;
   saveLastOutput
 end;
 
@@ -106,7 +110,9 @@ begin
   ResultList.clear;
   OutputMemo.clear;
 
-  loadSavedOutput
+  loadSavedOutput;
+
+  loadSavedQuery
 
   { Begin debug }
 
@@ -129,6 +135,11 @@ begin
         format('%s: %s', [state.readings.keys[a], list.DelimitedText]));
     end;
   }
+end;
+
+procedure TForm1.PlaceholderTextClick(Sender: TObject);
+begin
+  SearchEdit.SetFocus
 end;
 
 procedure TForm1.CopyButtonClick(Sender: TObject);
@@ -154,15 +165,28 @@ begin
   OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex]
 end;
 
-procedure TForm1.saveLastOutput;
+procedure TForm1.saveLastQuery;
 var
   f: text;
 begin
-  { Save the last output }
-  AssignFile(f, 'last_output.txt');
+  AssignFile(f, 'last_query.txt');
   rewrite(f);
-  write(f, OutputMemo.Text);
-  CloseFile(f);
+  writeln(f, SearchText);
+  CloseFile(f)
+end;
+
+procedure TForm1.loadSavedQuery;
+var
+  f: text;
+  line: string;
+begin
+  if not FileExists('last_query.txt') then exit;
+
+  assignfile(f, 'last_query.txt');
+  reset(f);
+  readln(f, line);
+  SearchEdit.Text := line;
+  closefile(f)
 end;
 
 procedure TForm1.loadSavedOutput;
@@ -175,6 +199,17 @@ begin
   sl.LoadFromFile('last_output.txt');
   OutputMemo.Text := sl.text;
   sl.free
+end;
+
+procedure TForm1.saveLastOutput;
+var
+  f: text;
+begin
+  { Save the last output }
+  AssignFile(f, 'last_output.txt');
+  rewrite(f);
+  write(f, OutputMemo.Text);
+  CloseFile(f);
 end;
 
 function TForm1.SearchText: UTF8String;

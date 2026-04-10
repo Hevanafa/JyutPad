@@ -9,4 +9,5 @@ builds/
 
 # Runtime stuff
 log.txt
+last_query.txt
 last_output.txt
