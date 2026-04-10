@@ -1,6 +1,7 @@
 #
 
 ![preview](./v0.2.1_preview.png)
+![WinXP preview](./v0.2.1_xp_preview.png)
 
 ## Credits
 
