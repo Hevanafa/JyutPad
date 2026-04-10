@@ -18,8 +18,9 @@
     </General>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="3"/>
-      <StringTable CompanyName="Hevanafa" LegalCopyright="Copyright 2026 Hevanafa" ProductName="JyutPad" ProductVersion="0.3"/>
+      <MinorVersionNr Value="2"/>
+      <RevisionNr Value="1"/>
+      <StringTable CompanyName="Hevanafa" LegalCopyright="Copyright 2026 Hevanafa" ProductName="JyutPad" ProductVersion="0.2.1"/>
     </VersionInfo>
     <BuildModes>
       <Item Name="Debug" Default="True"/>
@@ -118,6 +119,8 @@
         <StackChecks Value="True"/>
       </Checks>
       <VerifyObjMethodCallValidity Value="True"/>
+      <TargetCPU Value="i386"/>
+      <TargetOS Value="win32"/>
     </CodeGeneration>
     <Linking>
       <Debugging>
