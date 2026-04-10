@@ -37,6 +37,8 @@ type
     fReadings: TReadingDict;
 
   public
+    searchLimit: word;
+
     procedure loadCharReadings;
     procedure loadDictionary;
 
@@ -117,8 +119,6 @@ begin
 end;
 
 function TAppState.SearchEntries(const searchTerm: string): TStringArray;
-const
-  SearchLimit = 20;
 var
   count: word;
   a: word;
@@ -213,6 +213,7 @@ constructor TAppState.Create;
 begin
   { loadDictionary;
   loadCharReadings }
+  searchLimit := 20;
 end;
 
 destructor TAppState.Destroy;

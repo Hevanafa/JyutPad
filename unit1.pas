@@ -144,8 +144,15 @@ begin
 end;
 
 function TForm1.SearchText: UTF8String;
+var
+  query: string;
 begin
-  SearchText := trim(SearchEdit.Text)
+  query := trim(SearchEdit.Text);
+
+  while UTF8Pos('  ', query) > 0 do
+    query := ReplaceStr(query, '  ', ' ');
+
+  SearchText := query
 end;
 
 procedure TForm1.ResultListDblClick(Sender: TObject);
