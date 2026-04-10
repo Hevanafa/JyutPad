@@ -38,7 +38,9 @@ type
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
     procedure SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+
     procedure appendSelectedEntry;
+    procedure loadSavedOutput;
   private
     state: TAppState;
     lastSearchText: string;
@@ -61,8 +63,7 @@ implementation
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-  initLogger;
-
+  initLogger
 end;
 
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
@@ -111,6 +112,8 @@ begin
   ResultList.clear;
   OutputMemo.clear;
 
+  loadSavedOutput
+
   { Begin debug }
 
   { for a:=0 to 9 do
@@ -155,6 +158,18 @@ begin
   if ResultList.SelCount = 0 then exit;
 
   OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex]
+end;
+
+procedure TForm1.loadSavedOutput;
+var
+  sl: TStringListUTF8Fast;
+begin
+  if not FileExists('last_output.txt') then exit;
+
+  sl := TStringListUTF8Fast.create;
+  sl.LoadFromFile('last_output.txt');
+  OutputMemo.Text := sl.text;
+  sl.free
 end;
 
 function TForm1.SearchText: UTF8String;

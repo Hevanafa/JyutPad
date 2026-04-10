@@ -6,4 +6,7 @@ lib/
 *.dbg
 
 builds/
+
+# Runtime stuff
 log.txt
+last_output.txt
