@@ -26,7 +26,6 @@ type
     StatusBar1: TStatusBar;
     OneShotTimer: TTimer;
 
-    procedure ClearButtonClick(Sender: TObject);
     procedure CopyButtonClick(Sender: TObject);
 
     procedure FormShow(Sender: TObject);
@@ -38,15 +37,18 @@ type
     procedure ResultListDblClick(Sender: TObject);
     procedure SearchEditChange(Sender: TObject);
     procedure SearchEditKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ClearButtonClick(Sender: TObject);
 
-    procedure appendSelectedEntry;
-    procedure loadSavedOutput;
   private
     state: TAppState;
     lastSearchText: string;
 
-    function SearchText: UTF8String;
+    procedure loadSavedOutput;
+    procedure saveLastOutput;
+
     procedure setReportLabel(txt: string);
+    function SearchText: UTF8String;
+    procedure appendSelectedEntry;
   public
 
   end;
@@ -67,16 +69,8 @@ begin
 end;
 
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-var
-  f: text;
 begin
-
-
-  { Save the last output }
-  AssignFile(f, 'last_output.txt');
-  rewrite(f);
-  write(f, OutputMemo.Text);
-  CloseFile(f);
+  saveLastOutput
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -158,6 +152,17 @@ begin
   if ResultList.SelCount = 0 then exit;
 
   OutputMemo.text := OutputMemo.text + ResultList.items[ResultList.ItemIndex]
+end;
+
+procedure TForm1.saveLastOutput;
+var
+  f: text;
+begin
+  { Save the last output }
+  AssignFile(f, 'last_output.txt');
+  rewrite(f);
+  write(f, OutputMemo.Text);
+  CloseFile(f);
 end;
 
 procedure TForm1.loadSavedOutput;
