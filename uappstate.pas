@@ -213,7 +213,8 @@ constructor TAppState.Create;
 begin
   { loadDictionary;
   loadCharReadings }
-  searchLimit := 20;
+
+  searchLimit := 30;
 end;
 
 destructor TAppState.Destroy;

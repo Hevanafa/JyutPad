@@ -277,11 +277,17 @@ begin
     ResultList.clear;
 
     if SearchText = '' then begin
+      setReportLabel('Empty input');
       PlaceholderText.Visible := true;
     end else
       PlaceholderText.Visible := false;
 
     ResultList.Items.AddStrings(state.SearchEntries(SearchText));
+
+    if ResultList.Count > 0 then
+      setReportLabel(format('Found %d results in ? seconds', [ResultList.items]))
+    else
+      setReportLabel('No results');
 
     if ResultList.Count > 0 then
       ResultList.ItemIndex := 0;
