@@ -30,7 +30,9 @@ type
     procedure CopyButtonClick(Sender: TObject);
 
     procedure FormShow(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+
     procedure OneShotTimerTimer(Sender: TObject);
 
     procedure ResultListDblClick(Sender: TObject);
@@ -62,13 +64,25 @@ begin
   initLogger;
 
 end;
-    
+
+procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+var
+  f: text;
+begin
+
+
+  { Save the last output }
+  AssignFile(f, 'last_output.txt');
+  rewrite(f);
+  write(f, OutputMemo.Text);
+  CloseFile(f);
+end;
+
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
   a: word;
 begin
   state.free;
-
   closeLogger
 end;
 

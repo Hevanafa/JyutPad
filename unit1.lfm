@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 400
+  Left = 200
   Height = 360
-  Top = 300
+  Top = 100
   Width = 480
   Caption = 'JyutPad 0.2 by Hevanafa (Apr 2026)'
   ClientHeight = 360
@@ -14,6 +14,7 @@ object Form1: TForm1
   Font.Quality = fqDraft
   LCLVersion = '4.6.0.0'
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnShow = FormShow
   object StatusBar1: TStatusBar
     Left = 0
