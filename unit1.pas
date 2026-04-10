@@ -268,6 +268,8 @@ begin
 end;
 
 procedure TForm1.SearchEditChange(Sender: TObject);
+var
+  startTick, elapsed: qword;
 begin
   if state.EntryCount = 0 then exit;
 
@@ -275,17 +277,19 @@ begin
     lastSearchText := SearchText;
 
     ResultList.clear;
+    PlaceholderText.Visible := (SearchText = '');
 
     if SearchText = '' then begin
       setReportLabel('Empty input');
-      PlaceholderText.Visible := true;
-    end else
-      PlaceholderText.Visible := false;
+      exit
+    end;
 
+    startTick := GetTickCount64;
     ResultList.Items.AddStrings(state.SearchEntries(SearchText));
+    elapsed := GetTickCount64 - startTick;
 
     if ResultList.Count > 0 then
-      setReportLabel(format('Found %d results in ? seconds', [ResultList.items]))
+      setReportLabel(format('Found %d results in %.2f seconds', [ResultList.count, elapsed / 1000.0]))
     else
       setReportLabel('No results');
 
