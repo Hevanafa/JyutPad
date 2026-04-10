@@ -10,7 +10,8 @@ uses
   Classes, SysUtils, Forms,
   Controls, Graphics, Dialogs,
   ComCtrls, StdCtrls, LCLType,
-  Buttons, ExtCtrls, FGL, StrUtils, LazUTF8,
+  Buttons, ExtCtrls, FGL, StrUtils,
+  LazUTF8, IniFiles,
   UAppState, ULogger;
 
 type
@@ -49,6 +50,9 @@ type
     procedure saveLastOutput;
     procedure saveLastQuery;
 
+    procedure saveWindowPosSize;
+    procedure loadWindowPosSize;
+
     procedure setReportLabel(txt: string);
     function SearchText: UTF8String;
     procedure appendSelectedEntry;
@@ -68,13 +72,17 @@ implementation
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-  initLogger
+  initLogger;
+  loadWindowPosSize
 end;
 
 procedure TForm1.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
   saveLastQuery;
-  saveLastOutput
+  saveLastOutput;
+  saveWindowPosSize;
+
+  CanClose := true;
 end;
 
 procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -111,7 +119,6 @@ begin
   OutputMemo.clear;
 
   loadSavedOutput;
-
   loadSavedQuery
 
   { Begin debug }
@@ -210,6 +217,36 @@ begin
   rewrite(f);
   write(f, OutputMemo.Text);
   CloseFile(f);
+end;
+
+procedure TForm1.saveWindowPosSize;
+var
+  f: TIniFile;
+begin
+  f := TIniFile.create(Application.Location + 'jyutpad.ini');
+
+  f.WriteInteger('window', 'x', left);
+  f.WriteInteger('window', 'y', top);
+  f.WriteInteger('window', 'width', width);
+  f.WriteInteger('window', 'height', height);
+
+  f.free
+end;
+
+procedure TForm1.loadWindowPosSize;
+var
+  f: TIniFile;
+begin
+  if not FileExists('jyutpad.ini') then exit;
+
+  f := TIniFile.create(Application.Location + 'jyutpad.ini');
+
+  self.left := f.ReadInteger('window', 'x', (Screen.width - self.width) div 2);
+  self.top := f.ReadInteger('window', 'y', (screen.height - self.height) div 2);
+  self.width := f.ReadInteger('window', 'width', self.width);
+  self.height := f.ReadInteger('window', 'height', self.height);
+
+  f.free
 end;
 
 function TForm1.SearchText: UTF8String;

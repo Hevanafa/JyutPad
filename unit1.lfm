@@ -12,6 +12,7 @@ object Form1: TForm1
   Font.Name = 'Microsoft JhengHei'
   Font.Pitch = fpVariable
   Font.Quality = fqDraft
+  Position = poScreenCenter
   LCLVersion = '4.6.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
